@@ -24,8 +24,8 @@ function New-AADGroup {
         ===========================================================================
 		.DESCRIPTION
 		Creates an Azure AD Group
-        Things to change to fit your environment:
-        Line 45: Update clientId with your application Id. See https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
+        Things to change to deploy in your environment:
+        Line 45: replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
 		===========================================================================
 		.PARAMETER Name
 		REQUIRED - DisplayName of the group to be
@@ -67,8 +67,9 @@ function New-AADGroup {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     elseif (($Unified -eq $False) -and (!$description) -and (!$MailEnabled)) {
@@ -92,8 +93,9 @@ function New-AADGroup {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     elseif (($Unified -eq $True) -and ($Description) -and ($MailEnabled)) {
@@ -119,8 +121,9 @@ function New-AADGroup {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     elseif (($Unified -eq $True) -and (!$Description) -and ($MailEnabled)){
@@ -145,8 +148,9 @@ function New-AADGroup {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
 

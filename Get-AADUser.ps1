@@ -18,9 +18,8 @@ function Get-AADUser {
         ===========================================================================
 		.DESCRIPTION
 		Gets an Azure AD User
-        Things to change to work for your environment:
-        Line 35: Update clientId with your application Id. See 
-        https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
+        Things to change to deploy in your environment:
+        Line 34: replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
 		===========================================================================
 		.PARAMETER All
 		Lists all AAD users by displayName.
@@ -32,7 +31,7 @@ function Get-AADUser {
 		Get-AADUser -UPN bjameson@example.com <--- This will return the user bjameson@example.com
 	#>
 
-    $token = Get-MsalToken -clientid x -tenantid organizations
+    $token = Get-MsalToken -clientid 299a2e20-bdba-415e-97b1-be55c71f62a1 -tenantid organizations
     $global:header = @{'Authorization' = $token.createauthorizationHeader()}
 
     If ($All) {
@@ -69,13 +68,14 @@ function Get-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     else {
 
-        Write-Host "Please specify individual group or use All switch."
+        Write-Host "Please specify individual user or use All switch."
 
     }
 

@@ -16,8 +16,8 @@ function Enable-AADUser {
         ===========================================================================
 		.DESCRIPTION
 		Enables AAD User
-        Things to change to fit your environment:
-        Line 29: Update clientId with your application Id. See https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
+        Things to change to deploy in your environment:
+        Line 29: replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
 		===========================================================================
 		.PARAMETER UPN
         REQUIRED - Email/userPrincipalName of user to enable
@@ -39,6 +39,7 @@ function Enable-AADUser {
         $ResponseResult = $_.Exception.Response.GetResponseStream()
         $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
         $ResponseBody = $ResponseReader.ReadToEnd()
-        }
-        $ResponseBody
+        $ResponseBody    
+    }
+        
 }

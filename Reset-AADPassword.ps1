@@ -18,8 +18,8 @@ function Reset-AADPassword {
         ===========================================================================
 		.DESCRIPTION
 		Resets AAD user password and sets to ChangeAtNextLogon
-        Things to change to fit your environment:
-        Line 36: Update clientId with your application Id. See https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
+        Things to change to deploy in your environment:
+        Line 36: replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
 		===========================================================================
 		.PARAMETER UPN
         REQUIRED - Email/userPrincipalName of user to enable
@@ -36,25 +36,51 @@ function Reset-AADPassword {
     $token = Get-MsalToken -clientid x -tenantid organizations
     $global:header = @{'Authorization' = $token.createauthorizationHeader()}
 
-    Function GenerateStrongPassword ([Parameter(Mandatory = $true)][int]$PasswordLength)
-{
-    Add-Type -AssemblyName System.Web
-    $PassComplexCheck = $false
-    do
+    function GenerateStrongPassword
     {
-        $newPassword = [System.Web.Security.Membership]::GeneratePassword($PasswordLength, 3)
-        If (($newPassword -cmatch "[A-Z\p{Lu}\s]") `
-            -and ($newPassword -cmatch "[a-z\p{Ll}\s]") `
-            -and ($newPassword -match "[\d]") `
-            -and ($newPassword -match "[^\w]")
+        param (
+            [Parameter(Mandatory)]
+            [ValidateRange(4, [int]::MaxValue)]
+            [int]$length,
+            [int]$upper = 1,
+            [int]$lower = 1,
+            [int]$numeric = 1,
+            [int]$special = 1
         )
+        if ($upper + $lower + $numeric + $special -gt $length)
         {
-            $PassComplexCheck = $True
+            throw "number of upper/lower/numeric/special char must be lower or equal to length"
         }
+        $uCharSet = "ABCDEFGHJKMNPQRSTUWXYZ"
+        $lCharSet = "abcdfhjkmnrstuwxyz"
+        $nCharSet = "23456789"
+        $sCharSet = "/*-+!?=@_"
+        $charSet = ""
+        if ($upper -gt 0) { $charSet += $uCharSet }
+        if ($lower -gt 0) { $charSet += $lCharSet }
+        if ($numeric -gt 0) { $charSet += $nCharSet }
+        if ($special -gt 0) { $charSet += $sCharSet }
+        $charSet = $charSet.ToCharArray()
+        $rng = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
+        $bytes = New-Object byte[]($length)
+        $rng.GetBytes($bytes)
+        $result = New-Object char[]($length)
+        for ($i = 0; $i -lt $length; $i++)
+        {
+            $result[$i] = $charSet[$bytes[$i] % $charSet.Length]
+        }
+        $password = (-join $result)
+        $valid = $true
+        if ($upper -gt ($password.ToCharArray() | Where-Object { $_ -cin $uCharSet.ToCharArray() }).Count) { $valid = $false }
+        if ($lower -gt ($password.ToCharArray() | Where-Object { $_ -cin $lCharSet.ToCharArray() }).Count) { $valid = $false }
+        if ($numeric -gt ($password.ToCharArray() | Where-Object { $_ -cin $nCharSet.ToCharArray() }).Count) { $valid = $false }
+        if ($special -gt ($password.ToCharArray() | Where-Object { $_ -cin $sCharSet.ToCharArray() }).Count) { $valid = $false }
+        if (!$valid)
+        {
+            $password = RandomPassword $length $upper $lower $numeric $special
+        }
+        return $password
     }
-    While ($PassComplexCheck -eq $false)
-    return $newPassword
-}
 
     If ($Random) {
 
@@ -80,8 +106,9 @@ function Reset-AADPassword {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     elseif (!$Random -and $NewPwd) {
@@ -105,8 +132,9 @@ function Reset-AADPassword {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
         }
 }

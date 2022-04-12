@@ -14,12 +14,12 @@ function Term-AADUser {
         ===========================================================================
 		.DESCRIPTION
 		This function will terminate an AAD user in the following ways:
-        *Adds Z_TERM_ to front of user's displayname (changeable at line 767)
+        *Adds Z_TERM_ to front of user's displayname (changeable at line 765)
         *Removes all user licenses
         *Removes user from all statically assigned groups
         *Disables user
-        Things to change to fit your environment:
-        Line 31: Update clientId with your application Id. See https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
+        Things to change to deploy in your environment:
+        Line 31: replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
 		===========================================================================
 		.PARAMETER UPN
 		REQUIRED - Email/userPrincipalName of user to be termed
@@ -45,9 +45,37 @@ function Term-AADUser {
             [Parameter()]
             [String]$File
         )
+    
+        <#
+            IMPORTANT:
+            ===========================================================================
+            This script is provided 'as is' without any warranty. Any issues stemming 
+            from use is on the user.
+            ===========================================================================
+            .DESCRIPTION
+            This function will remove an Azure AD Group Member.
+            ===========================================================================
+            .PARAMETER UPN
+            REQUIRED - Email/UserPrincipalName of user to remove
+            .PARAMETER All
+            Optional switch to remove specified user from all statically assigned groups (will not remove from dynamic, because dynamic)
+            .PARAMETER Group
+            displayName of the group to remove user from
+            .PARAMETER Multi
+            Optional switch to indicate we intend to remove the user from multiple groups. Must be used with -File parameter
+            .PARAMETER File
+            Location of the text file with multiple groups (one per line) 
+            ===========================================================================
+            .EXAMPLE
+            Remove-AADGroupMember -UPN bjameson@example.com -Group Azure-Test <--- Removes bjameson@example.com from the group Azure-Test
+            Remove-AADGroupMember -UPN bjameson@example.com -Multi -File C:\Temp\groups.txt <--- Removes bjameson@example.com from all groups in the text file
+            Remove-AADGroupMember -UPN bjameson@example.com -All <--- Removes user from all statically assigned
+        #>
+    
+        
         
         function Get-AADUser {
-    
+
             [cmdletbinding()]
             param(
         
@@ -58,24 +86,32 @@ function Term-AADUser {
         
             )
             
-            
+            <#
+                IMPORTANT:
+                ===========================================================================
+                This script is provided 'as is' without any warranty. Any issues stemming 
+                from use is on the user.
+                ===========================================================================
+                .DESCRIPTION
+                Gets an Azure AD User
+                ===========================================================================
+                .PARAMETER All
+                Lists all AAD users by displayName.
+                .PARAMETER Name
+                The displayName of the user to get.
+                ===========================================================================
+                .EXAMPLE
+                Get-AADUser -All <--- This will return all AzureAD users
+                Get-AADUser -UPN bjameson@example.com <--- This will return the user bjameson@example.com
+            #>
+        
         
             If ($All) {
          
                 $uri = "https://graph.microsoft.com/v1.0/users"
                 $Users = While (!$NoMoreUsers) {
         
-                    Try {
-                        
-                        $GetUsers = Invoke-RestMethod -uri $uri -headers $header -method GET
-    
-                    }
-                    catch{
-                        $ResponseResult = $_.Exception.Response.GetResponseStream()
-                        $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
-                        $ResponseBody = $ResponseReader.ReadToEnd()
-                        }
-                        $ResponseBody
+                    $GetUsers = Invoke-RestMethod -uri $uri -headers $header -method GET
                     $getUsers.value
                     If ($getUsers."@odata.nextlink") {
         
@@ -95,17 +131,18 @@ function Term-AADUser {
             elseif ($UPN -ne $Null) {
         
                 $Uri = "https://graph.microsoft.com/v1.0/users/$UPN"
-                Try{
-                    
+                Try {
+                
                     Invoke-RestMethod -Uri $Uri -Headers $header -Method Get
-    
+        
                 }
                 catch{
                     $ResponseResult = $_.Exception.Response.GetResponseStream()
                     $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                     $ResponseBody = $ResponseReader.ReadToEnd()
-                    }
-                    $ResponseBody
+                    $ResponseBody    
+                }
+                    
         
             }
             else {
@@ -116,7 +153,26 @@ function Term-AADUser {
         
         }
         function Get-AADGroup {
-    
+
+            <#
+                IMPORTANT:
+                ===========================================================================
+                This script is provided 'as is' without any warranty. Any issues stemming 
+                from use is on the user.
+                ===========================================================================
+                .DESCRIPTION
+                Gets an Azure AD Group
+                ===========================================================================
+                .PARAMETER All
+                Lists all AAD groups by displayName.
+                .PARAMETER Name
+                The displayName of the group to get.
+                ===========================================================================
+                .EXAMPLE
+                Get-AADGroup -All <--- This will return all AzureAD groups
+                Get-AADGroup -Name Azure-Test <--- This will return the group Azure-Test
+            #>
+        
             [cmdletbinding()]
             param(
         
@@ -127,22 +183,24 @@ function Term-AADUser {
         
             )
             
+                        
             If ($All) {
         
                 $uri = "https://graph.microsoft.com/v1.0/groups"
                 $Groups = While (!$NoMoreGroups) {
         
-                    Try{
+                    Try {
                         
                         $GetGroups = Invoke-RestMethod -uri $uri -headers $header -method GET
-    
+        
                     }
                     catch{
                         $ResponseResult = $_.Exception.Response.GetResponseStream()
                         $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                         $ResponseBody = $ResponseReader.ReadToEnd()
-                        }
-                        $ResponseBody
+                        $ResponseBody    
+                    }
+                        
                     $getGroups.value
                     If ($getGroups."@odata.nextlink") {
         
@@ -164,17 +222,18 @@ function Term-AADUser {
                 $Uri = "https://graph.microsoft.com/v1.0/groups"
                 $Groups = While (!$NoMoreGroups) {
         
-                    Try{
+                    Try {
                         
                         $GetGroups = Invoke-RestMethod -uri $uri -headers $header -method GET
-    
+        
                     }
                     catch{
                         $ResponseResult = $_.Exception.Response.GetResponseStream()
                         $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                         $ResponseBody = $ResponseReader.ReadToEnd()
-                        }
-                        $ResponseBody
+                        $ResponseBody    
+                    }
+                        
                     $getGroups.value
                     If ($getGroups."@odata.nextlink") {
         
@@ -201,8 +260,8 @@ function Term-AADUser {
     
         If ($all){
     
-            $GroupsUri = "https://graph.microsoft.com/v1.0/users/$UPN/transitiveMemberOf"
-            $GroupRequest = Invoke-RestMethod -Uri $GroupsUri -Headers $Header -Method Get
+            $GroupsUri = "https://graph.microsoft.com/v1.0/users/$($User.Id)/transitiveMemberOf"
+            $GroupRequest = Invoke-WebRequest -Uri $GroupsUri -Headers $Header -Method Get
             $Groups = $GroupRequest | convertfrom-Json
             foreach ($Item in $Groups.value){
     
@@ -226,7 +285,7 @@ function Term-AADUser {
         }
         elseIf (($Group -ne $Null) -and (!$Multi)) {
     
-            $UsertoRemove = Get-AADUser -UPN tmctesty@verisma.com
+            $UsertoRemove = Get-AADUser -UPN $UPN
             $RemoveFrom = Get-AADGroup -Name $item
             $RemoveFromUri = "https://graph.microsoft.com/v1.0/groups/$($RemoveFrom.Id)/members/$($UsertoRemove.Id)/`$ref"
             Try{
@@ -238,8 +297,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
         
         }
         else {
@@ -260,8 +320,9 @@ function Term-AADUser {
                     $ResponseResult = $_.Exception.Response.GetResponseStream()
                     $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                     $ResponseBody = $ResponseReader.ReadToEnd()
-                    }
-                    $ResponseBody
+                    $ResponseBody    
+                }
+                    
     
             }
     
@@ -273,11 +334,28 @@ function Term-AADUser {
         [cmdletbinding()]
         param(
     
-            [Parameter()]
+            [Parameter(Mandatory = $true)]
             [String]$UPN
     
         )
-
+    
+        <#
+            IMPORTANT:
+            ===========================================================================
+            This script is provided 'as is' without any warranty. Any issues stemming 
+            from use is on the user.
+            ===========================================================================
+            .DESCRIPTION
+            Disables AAD User
+            ===========================================================================
+            .PARAMETER UPN
+            REQUIRED - Email/userPrincipalName of user to disable
+            ===========================================================================
+            .EXAMPLE
+            Disable-AADUser -UPN bjameson@example.com <--- This disables bjameson@example.com
+        #>
+    
+    
         $uri = "https://graph.microsoft.com/v1.0/users/$UPN"
         $Body = @{"accountEnabled" = $false} | ConvertTo-Json
         Try {
@@ -289,8 +367,9 @@ function Term-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
     }
     function Remove-AADUserLicense {
 
@@ -329,7 +408,53 @@ function Term-AADUser {
             [Parameter()]
             [Switch]$WStore
         )
-
+    
+        <#
+            IMPORTANT:
+            ===========================================================================
+            This script is provided 'as is' without any warranty. Any issues stemming 
+            from use is on the user.
+            ===========================================================================
+            .DESCRIPTION
+            Removes license(s) to AAD user
+            Known bugs/issues as of 3/14/22: 
+            Adding multiple licenses in one call can result in function failure due to MS Graph rate limiting
+            ===========================================================================
+            .PARAMETER UPN
+            REQUIRED - Email address/userPrincipalName of the user.
+            .PARAMETER All
+            Optional switch to remove all licenses from user
+            .PARAMETER E3
+            Removes user the M365 E3 license
+            .PARAMETER ExchangeStd
+            Removes user the M365 Exchange Online Standard license
+            .PARAMETER ExchangeEnt
+            Removes user the M365 Exchange Online Enterprise license
+            .PARAMETER Stream
+            Removes user the Microsoft Stream license
+            .PARAMETER Essentials
+            Removes user the O365 Business Essentials license
+            .PARAMETER AutomateFree
+            Removes user the Power Automate Free license
+            .PARAMETER AutomatePro
+            Removes user the Power Automate Pro license
+            .PARAMETER PBIFree
+            Removes user the PowerBI Free license
+            .PARAMETER PBIPro
+            Removes user the PowerBI Pro license
+            .PARAMETER ProjPrem
+            Removes user the Project Premium (Plan 3) license
+            .PARAMETER ProjPro
+            Removes user the Project Pro (Plan 5) license
+            .PARAMETER Visio
+            Removes user the Visio (Plan 2) license
+            ===========================================================================
+            .EXAMPLE
+            Remove-AADUserLicense -UPN bjameson@example.com -E3 -Visio <--- Removes E3 and Visio licenses from bjameson@example.com
+            Remove-AADUserLicense -UPN bjameson@example.com -All <--- Removes all licenses from bjameson@example.com
+        #>
+    
+        
         $E3SkuId = "05e9a617-0261-4cee-bb44-138d3ef5d965"
         $E5SkuId = "06ebc4ee-1bb5-47dd-8120-11324bc54e06"
         $ExStdSkuId = "4b9405b0-7788-4568-add1-99614e613b69"
@@ -364,8 +489,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($E5) {
@@ -387,8 +513,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($ExchangeStd) {
@@ -410,8 +537,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($ExchangeEnt) {
@@ -433,8 +561,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($Stream) {
@@ -456,8 +585,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody   
+            }
+               
     
         }
         If ($Essentials) {
@@ -479,8 +609,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($AutomateFree) {
@@ -502,8 +633,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody   
+            }
+               
     
         }
         If ($AutomatePro) {
@@ -525,8 +657,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($PBIFree) {
@@ -548,8 +681,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -572,8 +706,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -596,8 +731,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -620,8 +756,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -644,8 +781,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -668,8 +806,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -696,8 +835,9 @@ function Term-AADUser {
                     $ResponseResult = $_.Exception.Response.GetResponseStream()
                     $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                     $ResponseBody = $ResponseReader.ReadToEnd()
-                    }
-                    $ResponseBody
+                    $ResponseBody    
+                }
+                    
     
             }
     
@@ -715,7 +855,26 @@ function Term-AADUser {
             [String]$UPN
     
         )
-
+        
+        <#
+            IMPORTANT:
+            ===========================================================================
+            This script is provided 'as is' without any warranty. Any issues stemming 
+            from use is on the user.
+            ===========================================================================
+            .DESCRIPTION
+            Gets an Azure AD User
+            ===========================================================================
+            .PARAMETER All
+            Lists all AAD users by displayName.
+            .PARAMETER Name
+            The displayName of the user to get.
+            ===========================================================================
+            .EXAMPLE
+            Get-AADUser -All <--- This will return all AzureAD users
+            Get-AADUser -UPN bjameson@example.com <--- This will return the user bjameson@example.com
+        #>
+    
     
         If ($All) {
      
@@ -751,8 +910,9 @@ function Term-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         else {
@@ -784,8 +944,9 @@ function Term-AADUser {
         $ResponseResult = $_.Exception.Response.GetResponseStream()
         $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
         $ResponseBody = $ResponseReader.ReadToEnd()
-        }
-        $ResponseBody
+        $ResponseBody    
+    }
+        
 
 
     Write-Host "Removing $UPN from all groups..." -f White
@@ -800,8 +961,9 @@ function Term-AADUser {
         $ResponseResult = $_.Exception.Response.GetResponseStream()
         $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
         $ResponseBody = $ResponseReader.ReadToEnd()
-        }
-        $ResponseBody
+        $ResponseBody    
+    }
+        
 
     Write-Host "Removing all licenses for user $UPN..." -f White
     Try {
@@ -815,8 +977,9 @@ function Term-AADUser {
         $ResponseResult = $_.Exception.Response.GetResponseStream()
         $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
         $ResponseBody = $ResponseReader.ReadToEnd()
-        }
-        $ResponseBody
+        $ResponseBody    
+    }
+        
 
     Write-Host "Disabling user $UPN..."-f White
     Try {
@@ -829,8 +992,9 @@ function Term-AADUser {
         $ResponseResult = $_.Exception.Response.GetResponseStream()
         $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
         $ResponseBody = $ResponseReader.ReadToEnd()
-        }
-        $ResponseBody
+        $ResponseBody    
+    }
+        
 
     
 }

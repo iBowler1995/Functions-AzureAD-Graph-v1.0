@@ -44,10 +44,10 @@ function Remove-AADUserLicense {
         ===========================================================================
 		.DESCRIPTION
 		Removes license(s) to AAD user
-        Things to change to fit your environment:
-        Line 86: Update clientId with your application Id. See https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
         Known bugs/issues as of 3/14/22: 
         Adding multiple licenses in one call can result in function failure due to MS Graph rate limiting
+        Things to change to deploy in your environment:
+        Line 86: replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
         ===========================================================================
 		.PARAMETER UPN
 		REQUIRED - Email address/userPrincipalName of the user.
@@ -119,8 +119,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($E5) {
@@ -142,8 +143,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($ExchangeStd) {
@@ -165,8 +167,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($ExchangeEnt) {
@@ -188,8 +191,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($Stream) {
@@ -211,8 +215,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($Essentials) {
@@ -234,9 +239,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
-
+            $ResponseBody    
+        }
+            
     }
     If ($AutomateFree) {
 
@@ -257,8 +262,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($AutomatePro) {
@@ -280,8 +286,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($PBIFree) {
@@ -303,8 +310,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -327,8 +335,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -351,8 +360,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -375,8 +385,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -399,8 +410,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody   
+        }
+           
 
 
     }
@@ -423,8 +435,9 @@ function Remove-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -451,8 +464,9 @@ function Remove-AADUserLicense {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
                 $ResponseBody
+            }
+                
 
         }
 

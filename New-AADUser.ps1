@@ -14,8 +14,6 @@ function New-AADUser {
     [String]$Manager,
     [Parameter(Mandatory = $True)]
     [String]$Dept,
-    [Parameter(Mandatory = $True)]
-    [String]$Company,
     [Parameter()]
     [String]$Mobile,
     [Parameter()]
@@ -50,9 +48,9 @@ function New-AADUser {
 		Creates new AzureAD User, assigning specified licenses and groups
 
         Things to change to work for your environment:
-        Line 99: Update clientId with your application Id. See 
-        https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
-        Line 1051: add your company's domain name after @ for full email address
+        Line 1188: add your company's domain name after @ for full email address
+        Lines 1221 and 1226: replace x with your company name
+        Line 96: replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
         ===========================================================================
 		.PARAMETER FName
 		New user's first name
@@ -66,8 +64,6 @@ function New-AADUser {
         New user's manager
         .PARAMETER Dept
         New user's department
-        .PARAMETER Company
-        New user's company
         .PARAMETER Mobile
         New user's mobile number, if applicable
         .PARAMETER Group
@@ -113,6 +109,29 @@ function New-AADUser {
 			[Parameter()]
 			[String]$File
 		)
+
+		<#
+        IMPORTANT:
+        ===========================================================================
+        This script is provided 'as is' without any warranty. Any issues stemming 
+        from use is on the user.
+        ===========================================================================
+		.DESCRIPTION
+		Adds user to AzureAD Group
+        ===========================================================================
+		.PARAMETER Group
+		DisplayName of the group (how you see it in the GUI)
+		.PARAMETER User
+		User's email
+        .PARAMETER Multi
+        Use this switch if you have multiple groups to add a user to. Must be used in conjunction with File parameter
+        .PARAMETER File
+        Specifies the text file where you store each of the groups you want to add users to
+        ===========================================================================
+		.EXAMPLE
+		Add-AADGroupMember -Group "Azure-Test" -User bob@Contoso.com <--- This will add Bob to the Azure-Test
+        Add-AADGroupMember -User bob@contoso.com -Multi -File "C:\Temp\Groups.txt" This will parse the txt file and add user to all groups in it, if they exist
+	#>
 		
 		function Get-AADUser
 		{
@@ -131,34 +150,58 @@ function New-AADUser {
 			{
 				
 				$uri = "https://graph.microsoft.com/v1.0/users"
-				$Users = While (!$NoMoreUsers){
+				$Users = While (!$NoMoreUsers)
+				{
 					
-					$GetUsers = Invoke-RestMethod -uri $uri -headers $Header -method GET
-					$getUsers.value
+					Try {
 
-					If ($getUsers."@odata.nextlink"){
-						
-						$uri = $getUsers."@odata.nextlink"
-						
+						$GetUsers = Invoke-RestMethod -uri $uri -headers $Header -method GET
+						$getUsers.value
+						If ($getUsers."@odata.nextlink")
+						{
+							
+							$uri = $getUsers."@odata.nextlink"
+							
+						}
+						Else
+						{
+							
+							$NoMoreUsers = $True
+							
+						}
+
 					}
-					Else
-					{
-						
-						$NoMoreUsers = $True
-						
+					catch{
+						$ResponseResult = $_.Exception.Response.GetResponseStream()
+						$ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
+						$ResponseBody = $ResponseReader.ReadToEnd()
+						$ResponseBody
 					}
+
 				}
 				$NoMoreUsers = $False
 				$Users | select displayName | sort displayName
 				
 			}
-			elseif ($UPN -ne $Null){
+			elseif ($UPN -ne $Null)
+			{
 				
-				$Uri = "https://graph.microsoft.com/v1.0/users/$UPN"
-				Invoke-RestMethod -Uri $Uri -Headers $Header -Method Get
+				Try {
+
+					$Uri = "https://graph.microsoft.com/v1.0/users/$UPN"
+					Invoke-RestMethod -Uri $Uri -Headers $Header -Method Get
+
+				}
+				catch{
+                    $ResponseResult = $_.Exception.Response.GetResponseStream()
+                    $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
+                    $ResponseBody = $ResponseReader.ReadToEnd()
+                    $ResponseBody
+                }
 				
 			}
-			else{
+			else
+			{
 				
 				Write-Host "Please specify individual group or use All switch."
 				
@@ -185,20 +228,31 @@ function New-AADUser {
 				$Groups = While (!$NoMoreGroups)
 				{
 					
-					$GetGroups = Invoke-RestMethod -uri $uri -headers $Header -method GET
-					$getGroups.value
-					If ($getGroups."@odata.nextlink")
-					{
-						
-						$uri = $getGroups."@odata.nextlink"
-						
+					Try {
+
+						$GetGroups = Invoke-RestMethod -uri $uri -headers $Header -method GET
+						$getGroups.value
+						If ($getGroups."@odata.nextlink")
+						{
+							
+							$uri = $getGroups."@odata.nextlink"
+							
+						}
+						Else
+						{
+							
+							$NoMoreGroups = $True
+							
+						}
+
 					}
-					Else
-					{
-						
-						$NoMoreGroups = $True
-						
+					catch{
+						$ResponseResult = $_.Exception.Response.GetResponseStream()
+						$ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
+						$ResponseBody = $ResponseReader.ReadToEnd()
+						$ResponseBody
 					}
+
 				}
 				$NoMoreGroups = $False
 				$Groups | select displayName | sort displayName
@@ -211,20 +265,31 @@ function New-AADUser {
 				$Groups = While (!$NoMoreGroups)
 				{
 					
-					$GetGroups = Invoke-RestMethod -uri $uri -headers $Header -method GET
-					$getGroups.value
-					If ($getGroups."@odata.nextlink")
-					{
-						
-						$uri = $getGroups."@odata.nextlink"
-						
+					Try {
+
+						$GetGroups = Invoke-RestMethod -uri $uri -headers $Header -method GET
+						$getGroups.value
+						If ($getGroups."@odata.nextlink")
+						{
+							
+							$uri = $getGroups."@odata.nextlink"
+							
+						}
+						Else
+						{
+							
+							$NoMoreGroups = $True
+							
+						}
+
 					}
-					Else
-					{
-						
-						$NoMoreGroups = $True
-						
+					catch{
+						$ResponseResult = $_.Exception.Response.GetResponseStream()
+						$ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
+						$ResponseBody = $ResponseReader.ReadToEnd()
+						$ResponseBody
 					}
+
 				}
 				$NoMoreGroups = $False
 				$Groups | where { $_.displayName -eq $Name }
@@ -243,11 +308,21 @@ function New-AADUser {
 		If (($Group -ne $Null) -and (!$Multi))
 		{
 			
-			$UserToAdd = Get-AADUser -UPN $UPN
-			$AddTo = Get-AADGroup -Name $Group
-			$AddtoUri = "https://graph.microsoft.com/v1.0/groups/$($AddTo.Id)/members/`$ref"
-			$Body = @{ "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$($UserToAdd.Id)" } | ConvertTo-Json
-			Invoke-RestMethod -Uri $AddtoUri -Headers $Header -Method "Post" -ContentType "application/json" -Body $Body
+			Try {
+
+				$UserToAdd = Get-AADUser -UPN $UPN
+				$AddTo = Get-AADGroup -Name $Group
+				$AddtoUri = "https://graph.microsoft.com/v1.0/groups/$($AddTo.Id)/members/`$ref"
+				$Body = @{ "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$($UserToAdd.Id)" } | ConvertTo-Json
+				Invoke-RestMethod -Uri $AddtoUri -Headers $Header -Method "Post" -ContentType "application/json" -Body $Body
+
+			}
+			catch{
+				$ResponseResult = $_.Exception.Response.GetResponseStream()
+				$ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
+				$ResponseBody = $ResponseReader.ReadToEnd()
+				$ResponseBody
+			}
 			
 		}
 		else
@@ -258,17 +333,28 @@ function New-AADUser {
 			foreach ($G in $GroupsToAdd)
 			{
 				
-				$UserToAdd = Get-AADUser -UPN $UPN
-				$AddTo = Get-AADGroup -Name $G
-				$AddtoUri = "https://graph.microsoft.com/v1.0/groups/$($AddTo.Id)/members/`$ref"
-				$Body = @{ "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$($UserToAdd.Id)" } | ConvertTo-Json
-				Invoke-RestMethod -Uri $AddtoUri -Headers $Header -Method "Post" -ContentType "application/json" -Body $Body
+				Try {
+
+					$UserToAdd = Get-AADUser -UPN $UPN
+					$AddTo = Get-AADGroup -Name $G
+					$AddtoUri = "https://graph.microsoft.com/v1.0/groups/$($AddTo.Id)/members/`$ref"
+					$Body = @{ "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$($UserToAdd.Id)" } | ConvertTo-Json
+					Invoke-RestMethod -Uri $AddtoUri -Headers $Header -Method "Post" -ContentType "application/json" -Body $Body
+
+				}
+				catch{
+                    $ResponseResult = $_.Exception.Response.GetResponseStream()
+                    $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
+                    $ResponseBody = $ResponseReader.ReadToEnd()
+                    $ResponseBody
+                }
 				
 			}
 			
 		}
 		
 	}
+    ###########################################################################
         function Get-AADGroup {
     
             [cmdletbinding()]
@@ -282,7 +368,7 @@ function New-AADUser {
             )
             
             If ($All) {
-
+        
                 $uri = "https://graph.microsoft.com/v1.0/groups"
                 $Groups = While (!$NoMoreGroups) {
         
@@ -295,8 +381,9 @@ function New-AADUser {
                         $ResponseResult = $_.Exception.Response.GetResponseStream()
                         $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                         $ResponseBody = $ResponseReader.ReadToEnd()
-                        }
-                        $ResponseBody
+                        $ResponseBody    
+                    }
+                        
                     $getGroups.value
                     If ($getGroups."@odata.nextlink") {
             
@@ -326,8 +413,9 @@ function New-AADUser {
                         $ResponseResult = $_.Exception.Response.GetResponseStream()
                         $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                         $ResponseBody = $ResponseReader.ReadToEnd()
-                        }
-                        $ResponseBody
+                        $ResponseBody    
+                    }
+                        
                     $getGroups.value
                     If ($getGroups."@odata.nextlink") {
         
@@ -368,8 +456,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
         
         }
         else {
@@ -391,14 +480,16 @@ function New-AADUser {
                     $ResponseResult = $_.Exception.Response.GetResponseStream()
                     $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                     $ResponseBody = $ResponseReader.ReadToEnd()
-                    }
-                    $ResponseBody
+                    $ResponseBody    
+                }
+                    
     
             }
     
         }
     
     }
+    ###########################################################################
     function Assign-AADUserLicense {
 
         [CmdletBinding()]
@@ -470,8 +561,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($E5) {
@@ -494,8 +586,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($ExchangeStd) {
@@ -518,8 +611,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($ExchangeEnt) {
@@ -542,8 +636,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($Stream) {
@@ -566,8 +661,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($Essentials) {
@@ -590,8 +686,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($AutomateFree) {
@@ -614,8 +711,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($AutomatePro) {
@@ -638,8 +736,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         If ($PBIFree) {
@@ -662,8 +761,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -687,8 +787,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -712,8 +813,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -737,8 +839,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody   
+            }
+               
     
     
         }
@@ -762,8 +865,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
@@ -787,13 +891,15 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
     
         }
     
     }
+    ###########################################################################
     function Update-AADUser {
 
         [CmdletBinding()]
@@ -839,8 +945,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
+                $ResponseBody
             }
-            $ResponseBody
+            
         }
         If ($LName){
     
@@ -860,8 +967,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
+                $ResponseBody
             }
-            $ResponseBody
+            
         }
         If ($Title){
     
@@ -881,8 +989,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
+                $ResponseBody
             }
-            $ResponseBody
+            
         }
         If ($Office){
     
@@ -902,8 +1011,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
+                $ResponseBody
             }
-            $ResponseBody
+            
         }
         If ($Manager){
     
@@ -923,8 +1033,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
+                $ResponseBody
             }
-            $ResponseBody
+            
         }
         If ($Dept){
     
@@ -944,8 +1055,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
+                $ResponseBody
             }
-            $ResponseBody
+            
         }
         If ($Mobile){
     
@@ -965,8 +1077,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
+                $ResponseBody
             }
-            $ResponseBody
+           
         }
         If ($Location) {
     
@@ -986,8 +1099,9 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
+                $ResponseBody
             }
-            $ResponseBody
+            
     
         }
         If ($Company) {
@@ -1008,35 +1122,60 @@ function New-AADUser {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
+                $ResponseBody
             }
-            $ResponseBody
+            
     
         }
     }
 
+
     #################################################
     #Generating a secure password
-    Function GenerateStrongPassword ([Parameter(Mandatory = $true)][int]$PasswordLength){
-
-        Add-Type -AssemblyName System.Web
-        $PassComplexCheck = $false
-        do{
-
-            $newPassword = [System.Web.Security.Membership]::GeneratePassword($PasswordLength, 3)
-            If (($newPassword -cmatch "[A-Z\p{Lu}\s]") `
-                -and ($newPassword -cmatch "[a-z\p{Ll}\s]") `
-                -and ($newPassword -match "[\d]") `
-                -and ($newPassword -match "[^\w]")
-            )
-            {
-                $PassComplexCheck = $True
-            }
-
+    function GenerateStrongPassword
+    {
+        param (
+            [Parameter(Mandatory)]
+            [ValidateRange(4, [int]::MaxValue)]
+            [int]$length,
+            [int]$upper = 1,
+            [int]$lower = 1,
+            [int]$numeric = 1,
+            [int]$special = 1
+        )
+        if ($upper + $lower + $numeric + $special -gt $length)
+        {
+            throw "number of upper/lower/numeric/special char must be lower or equal to length"
         }
-
-        While ($PassComplexCheck -eq $false)
-        return $newPassword
-
+        $uCharSet = "ABCDEFGHJKMNPQRSTUWXYZ"
+        $lCharSet = "abcdfhjkmnrstuwxyz"
+        $nCharSet = "23456789"
+        $sCharSet = "/*-+!?=@_"
+        $charSet = ""
+        if ($upper -gt 0) { $charSet += $uCharSet }
+        if ($lower -gt 0) { $charSet += $lCharSet }
+        if ($numeric -gt 0) { $charSet += $nCharSet }
+        if ($special -gt 0) { $charSet += $sCharSet }
+        $charSet = $charSet.ToCharArray()
+        $rng = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
+        $bytes = New-Object byte[]($length)
+        $rng.GetBytes($bytes)
+        $result = New-Object char[]($length)
+        for ($i = 0; $i -lt $length; $i++)
+        {
+            $result[$i] = $charSet[$bytes[$i] % $charSet.Length]
+        }
+        $password = (-join $result)
+        $valid = $true
+        if ($upper -gt ($password.ToCharArray() | Where-Object { $_ -cin $uCharSet.ToCharArray() }).Count) { $valid = $false }
+        if ($lower -gt ($password.ToCharArray() | Where-Object { $_ -cin $lCharSet.ToCharArray() }).Count) { $valid = $false }
+        if ($numeric -gt ($password.ToCharArray() | Where-Object { $_ -cin $nCharSet.ToCharArray() }).Count) { $valid = $false }
+        if ($special -gt ($password.ToCharArray() | Where-Object { $_ -cin $sCharSet.ToCharArray() }).Count) { $valid = $false }
+        if (!$valid)
+        {
+            $password = RandomPassword $length $upper $lower $numeric $special
+        }
+        return $password
     }
     
     #################################################
@@ -1046,7 +1185,7 @@ function New-AADUser {
     #################################################
     #Creating the User
     $Initial = $FName.SubString(0,1)
-    $UPN = "$Initial$LName@mydomain.com"
+    $UPN = "$Initial$LName@domain.com"
     $Uri = "https://graph.microsoft.com/v1.0/users"
     $body = @{
 
@@ -1079,12 +1218,12 @@ function New-AADUser {
     Start-Sleep -s 5
     If ($Mobile) {
 
-        Update-AADUser -UPN $UPN -FName $FName -LName $LName -Company $Company -Title $Title -Office $Office -Manager $Manager -Dept $Dept -Mobile $Mobile -Location | out-null
+        Update-AADUser -UPN $UPN -FName $FName -LName $LName -Company x -Title $Title -Office $Office -Manager $Manager -Dept $Dept -Mobile $Mobile -Location | out-null
 
     }
     else{
 
-        Update-AADUser -UPN $UPN -FName $FName -LName $LName -Company $Company -Title $Title -Office $Office -Manager $Manager -Dept $Dept -Location | out-null
+        Update-AADUser -UPN $UPN -FName $FName -LName $LName -Company x -Title $Title -Office $Office -Manager $Manager -Dept $Dept -Location | out-null
 
     }
     

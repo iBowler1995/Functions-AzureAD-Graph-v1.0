@@ -22,8 +22,8 @@ function Remove-AADGroupMember {
         ===========================================================================
 		.DESCRIPTION
 		This function will remove an Azure AD Group Member.
-        Things to change to fit your environment:
-        Line 45: Update clientId with your application Id. See https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
+        Things to change to deploy in your environment:
+        Line 45: replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
 		===========================================================================
 		.PARAMETER UPN
 		REQUIRED - Email/UserPrincipalName of user to remove
@@ -44,7 +44,6 @@ function Remove-AADGroupMember {
 
     $token = Get-MsalToken -clientid x -tenantid organizations
     $global:header = @{'Authorization' = $token.createauthorizationHeader()}
-    
     function Get-AADUser {
 
         [cmdletbinding()]
@@ -73,8 +72,9 @@ function Remove-AADGroupMember {
                     $ResponseResult = $_.Exception.Response.GetResponseStream()
                     $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                     $ResponseBody = $ResponseReader.ReadToEnd()
-                    }
-                    $ResponseBody
+                    $ResponseBody    
+                }
+                    
                 $getUsers.value
                 If ($getUsers."@odata.nextlink") {
     
@@ -103,8 +103,9 @@ function Remove-AADGroupMember {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
     
         }
         else {
@@ -126,6 +127,9 @@ function Remove-AADGroupMember {
     
         )
         
+        $token = Get-MsalToken -clientid 299a2e20-bdba-415e-97b1-be55c71f62a1 -tenantid organizations
+        $global:header = @{'Authorization' = $token.createauthorizationHeader();'ConsistencyLevel' = 'eventual'}
+        
         If ($All) {
     
             $uri = "https://graph.microsoft.com/v1.0/groups"
@@ -140,8 +144,9 @@ function Remove-AADGroupMember {
                     $ResponseResult = $_.Exception.Response.GetResponseStream()
                     $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                     $ResponseBody = $ResponseReader.ReadToEnd()
-                    }
-                    $ResponseBody
+                    $ResponseBody    
+                }
+                    
                 $getGroups.value
                 If ($getGroups."@odata.nextlink") {
     
@@ -172,8 +177,9 @@ function Remove-AADGroupMember {
                     $ResponseResult = $_.Exception.Response.GetResponseStream()
                     $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                     $ResponseBody = $ResponseReader.ReadToEnd()
-                    }
-                    $ResponseBody
+                    $ResponseBody    
+                }
+                    
                 $getGroups.value
                 If ($getGroups."@odata.nextlink") {
     
@@ -200,13 +206,12 @@ function Remove-AADGroupMember {
 
     If ($all){
 
-        $GroupsUri = "https://graph.microsoft.com/v1.0/users/$($User.Id)/transitiveMemberOf"
-        $GroupRequest = Invoke-WebRequest -Uri $GroupsUri -Headers $Header -Method Get
-        $Groups = $GroupRequest | convertfrom-Json
-        foreach ($Item in $Groups.value){
+        $GroupsUri = "https://graph.microsoft.com/v1.0/users/$UPN/transitiveMemberOf"
+        $GroupRequest = Invoke-RestMethod -Uri $GroupsUri -Headers $Header -Method Get
+        foreach ($Item in $GroupRequest.value){
 
             $RemoveFrom = Get-AADGroup -Name $Item.displayName
-            $UsertoRemove = Get-AADUser -UPN tmctesty@verisma.com
+            $UsertoRemove = Get-AADUser -UPN $UPN
             $RemoveFromUri = "https://graph.microsoft.com/v1.0/groups/$($RemoveFrom.Id)/members/$($UsertoRemove.Id)/`$ref"
             Try{
 
@@ -225,8 +230,8 @@ function Remove-AADGroupMember {
     }
     elseIf (($Group -ne $Null) -and (!$Multi)) {
 
-        $UsertoRemove = Get-AADUser -UPN tmctesty@verisma.com
-        $RemoveFrom = Get-AADGroup -Name $item
+        $UsertoRemove = Get-AADUser -UPN $UPN
+        $RemoveFrom = Get-AADGroup -Name $Group
         $RemoveFromUri = "https://graph.microsoft.com/v1.0/groups/$($RemoveFrom.Id)/members/$($UsertoRemove.Id)/`$ref"
         Try{
         
@@ -237,8 +242,9 @@ function Remove-AADGroupMember {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
     
     }
     else {
@@ -259,8 +265,9 @@ function Remove-AADGroupMember {
                 $ResponseResult = $_.Exception.Response.GetResponseStream()
                 $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
                 $ResponseBody = $ResponseReader.ReadToEnd()
-                }
-                $ResponseBody
+                $ResponseBody    
+            }
+                
 
         }
 

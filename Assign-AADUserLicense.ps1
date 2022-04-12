@@ -44,8 +44,8 @@ function Assign-AADUserLicense {
 		Assigns license(s) to AAD user
         Known bugs/issues as of 3/14/22: 
         Adding multiple licenses in one call can result in function failure due to MS Graph rate limiting
-        Things to change to fit your org:
-        Line 81: Update with clientId of your Registered AAD app. See https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
+        Things to change to deploy in your environment:
+        Line 81 - replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
         ===========================================================================
 		.PARAMETER UPN
 		REQUIRED - Email address/userPrincipalName of the user.
@@ -114,8 +114,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($E5) {
@@ -137,8 +138,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($ExchangeStd) {
@@ -160,8 +162,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($ExchangeEnt) {
@@ -183,8 +186,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($Stream) {
@@ -206,8 +210,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($Essentials) {
@@ -229,8 +234,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($AutomateFree) {
@@ -252,8 +258,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($AutomatePro) {
@@ -275,8 +282,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
     }
     If ($PBIFree) {
@@ -298,8 +306,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -322,8 +331,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -346,8 +356,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -370,8 +381,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -394,8 +406,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }
@@ -418,8 +431,9 @@ function Assign-AADUserLicense {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
-            }
-            $ResponseBody
+            $ResponseBody    
+        }
+            
 
 
     }

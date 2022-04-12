@@ -33,6 +33,8 @@ function Update-AADUser {
         ===========================================================================
 		.DESCRIPTION
 		This function will update an AAD user
+        Things to change to deploy in your environment:
+        Line 60: replace x with clientID of your reigstered app. See https://bit.ly/3KApKhJ for more info.
 		===========================================================================
 		.PARAMETER UPN
         REQUIRED - Email/userPrincipalName of user to be updated
@@ -49,9 +51,7 @@ function Update-AADUser {
         .PARAMETER Company
         Updates user's company
         .PARAMETER Location
-        Switch that adds US as usage location (can be updated for other country codes at line 214)
-        Things to change to fit your environment:
-        Line 60: Update clientId with your application Id. See https://docs.microsoft.com/en-us/graph/auth-v2-user for more info
+        Switch that adds US as usage location (can be updated for other country codes at line 212)
 		===========================================================================
 		.EXAMPLE
 		Update-AADUser -UPN bjameson@example.com -Title "Sr. Job Tester" -Office "Los Angeles" <--- Updates bjameson@example.com's title to Sr. Job Tester and office to LA
@@ -77,8 +77,9 @@ function Update-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
+            $ResponseBody
         }
-        $ResponseBody
+        
     }
     If ($LName){
 
@@ -98,8 +99,9 @@ function Update-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
+            $ResponseBody
         }
-        $ResponseBody
+        
     }
     If ($Title){
 
@@ -119,8 +121,9 @@ function Update-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
+            $ResponseBody
         }
-        $ResponseBody
+        
     }
     If ($Office){
 
@@ -140,8 +143,9 @@ function Update-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
+            $ResponseBody
         }
-        $ResponseBody
+        
     }
     If ($Manager){
 
@@ -161,8 +165,9 @@ function Update-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
+            $ResponseBody
         }
-        $ResponseBody
+        
     }
     If ($Dept){
 
@@ -182,8 +187,9 @@ function Update-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
+            $ResponseBody
         }
-        $ResponseBody
+        
     }
     If ($Mobile){
 
@@ -203,8 +209,9 @@ function Update-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
+            $ResponseBody
         }
-        $ResponseBody
+        
     }
     If ($Location) {
 
@@ -224,8 +231,9 @@ function Update-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
+            $ResponseBody
         }
-        $ResponseBody
+        
 
     }
     If ($Company) {
@@ -246,8 +254,9 @@ function Update-AADUser {
             $ResponseResult = $_.Exception.Response.GetResponseStream()
             $ResponseReader = New-Object System.IO.StreamReader($ResponseResult)
             $ResponseBody = $ResponseReader.ReadToEnd()
+            $ResponseBody
         }
-        $ResponseBody
+        
 
     }
 }
