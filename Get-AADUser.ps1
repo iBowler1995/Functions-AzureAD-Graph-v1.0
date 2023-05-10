@@ -31,7 +31,7 @@ function Get-AADUser {
 		Get-AADUser -UPN bjameson@example.com <--- This will return the user bjameson@example.com
 	#>
 
-    $token = Get-MsalToken x -tenantid organizations
+    $token = Get-MsalToken -ClientID x -tenantid organizations
     $global:header = @{'Authorization' = $token.createauthorizationHeader()}
 
     If ($All) {
